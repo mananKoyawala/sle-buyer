@@ -36,7 +36,7 @@ class ProductNotifier extends AutoDisposeNotifier<ProductState> {
   Future<void> fetchData() async {
     state = ProductState(products: state.products, isLoading: true);
     try {
-      final products = await helper.getAllSellerProducts();
+      final products = await helper.getAllProducts();
       state = ProductState(products: products, isLoading: false);
     } catch (e) {
       state = ProductState(products: [], isLoading: false);

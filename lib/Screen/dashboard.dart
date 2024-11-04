@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sle_buyer/Screen/category_list_screen.dart';
 import '../../Screen/home_screen.dart';
 import '../../Screen/profile_screen.dart';
 import '../../provider/dashboard_provider.dart';
@@ -69,7 +70,7 @@ Widget getPage(int isOpened) {
     case 0:
       return HomeScreen();
     case 1:
-      return Placeholder();
+      return CategoryScreen();
     case 2:
       return ProfileScreen();
     default:

@@ -56,4 +56,9 @@ class ApiService {
   Future<http.Response> getAllProducts() async {
     return await http.get(Uri.parse('$baseURL/products'));
   }
+
+  Future<http.Response> getAllProductsByCategory(String category) async {
+    return await http
+        .get(Uri.parse('$baseURL/products/category?category=$category'));
+  }
 }
