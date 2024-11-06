@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Screen/Auth/signup_otp_verification_screen.dart';
 import 'package:sle_buyer/Screen/dashboard.dart';
+import 'package:sle_buyer/helper/Firebase/firebase.dart';
 import 'package:sle_buyer/helper/buyer_api_helper.dart';
 
 import '../../Package/PackageConstants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignupController {
+class SignupController with firebase {
   bool onClicked = false; // to prevent from multiple clicks
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
+  String verificationId = "";
 
   final firstNameCtr = TextEditingController();
   final lastNameCtr = TextEditingController();
@@ -20,6 +23,7 @@ class SignupController {
 
   // called when controller no longer neeed
   void resetAll() {
+    verificationId = "";
     firstNameCtr.clear();
     lastNameCtr.clear();
     emailCtr.clear();
@@ -42,7 +46,7 @@ class SignupController {
       final apiHelper = BuyerApiHelper();
       bool isExists = await apiHelper.isBuyerExists(phoneCtr.text);
       if (!isExists) {
-        Navigation.pushMaterial(SignupOtpVerificationScreen());
+        verifyPhoneNumber();
       } else {
         toast("User already exist with Phone number");
       }
@@ -61,24 +65,65 @@ class SignupController {
       }
       onClicked = true;
       changeIsLoadingSingup(ref, true);
+
+// verify otp
+      bool isVerified = await verifyOTP();
+
       //  call buyer api
-      final apiHelper = BuyerApiHelper();
-      bool isSignedup = await apiHelper.buyerSignup(
-          firstNameCtr.text,
-          lastNameCtr.text,
-          emailCtr.text,
-          "https://images.pexels.com/photos/1520760/pexels-photo-1520760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-          addressCtr.text,
-          phoneCtr.text,
-          "2002-02-02");
-      if (isSignedup) {
-        Navigation.pushMaterial(Dashboard());
+      if (isVerified) {
+        final apiHelper = BuyerApiHelper();
+        bool isSignedup = await apiHelper.buyerSignup(
+            firstNameCtr.text,
+            lastNameCtr.text,
+            emailCtr.text,
+            "https://images.pexels.com/photos/1520760/pexels-photo-1520760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            addressCtr.text,
+            phoneCtr.text,
+            "2002-02-02");
+        if (isSignedup) {
+          Navigation.pushMaterial(Dashboard());
+          await Future.delayed(const Duration(milliseconds: 600));
+          resetAll();
+        }
       }
       changeIsLoadingSingup(ref, false);
       onClicked = false;
-      await Future.delayed(const Duration(milliseconds: 300));
-      resetAll();
     }
+  }
+
+  void verifyPhoneNumber() {
+    auth
+        .verifyPhoneNumber(
+      phoneNumber: '+91${phoneCtr.text}',
+      verificationCompleted: (e) {},
+      verificationFailed: (e) {},
+      codeSent: (id, token) {
+        verificationId = id;
+      },
+      codeAutoRetrievalTimeout: (e) {},
+    )
+        .then((v) {
+      // if otp send successfully then move to otp verification screen
+      Navigation.pushMaterial(SignupOtpVerificationScreen());
+    });
+  }
+
+  Future<bool> verifyOTP() async {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: otpCtr.text,
+    );
+    bool isVerified = false;
+    try {
+      // validating user otp
+      await auth.signInWithCredential(credential).then((v) {
+        isVerified = true;
+      });
+    } catch (e) {
+      toast("wrong otp");
+      isVerified = false;
+    }
+    return isVerified;
   }
 }
 

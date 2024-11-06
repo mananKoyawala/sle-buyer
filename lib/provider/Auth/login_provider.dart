@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Package/PackageConstants.dart';
+import 'package:sle_buyer/helper/Firebase/firebase.dart';
 import 'package:sle_buyer/helper/buyer_api_helper.dart';
 import '../../Screen/Auth/login_otp_verification_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginController {
+import '../../Screen/dashboard.dart';
+
+class LoginController with firebase {
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
   final phoneCtr = TextEditingController();
   final otpCtr = TextEditingController();
+  String verificationId = "";
   bool onClicked = false; // to prevent from multiple clicks
   // Dispose method to be called when this controller is no longer needed
   void resetAll() {
+    verificationId = "";
     phoneCtr.clear();
     otpCtr.clear();
   }
@@ -22,10 +28,13 @@ class LoginController {
     if (formKey1.currentState!.validate() && !onClicked) {
       onClicked = true;
       changeIsLoading(ref, true);
+
+      // check user exists with phone number
       bool isExists = await apiHelper.isBuyerExists(phoneCtr.text);
 
       if (isExists) {
-        Navigation.pushMaterial(LoginOtpVerificationScreen());
+        // sending to otp verification screen
+        verifyPhoneNumber();
       } else {
         toast("Can't find account with Phone number");
       }
@@ -38,16 +47,55 @@ class LoginController {
     if (formKey2.currentState!.validate() && !onClicked) {
       onClicked = true;
       changeIsLoading(ref, true);
-      // calling buyer login
-      bool isLoggedIn = await apiHelper.buyerLogin(phoneCtr.text);
-      if (!isLoggedIn) {
-        Navigation.pop();
+      // verify otp
+      bool isVerified = await verifyOTP();
+
+      if (isVerified) {
+        bool isLoggedIn = await apiHelper.buyerLogin(phoneCtr.text);
+        if (!isLoggedIn) {
+          Navigation.pop();
+        }
+        await Future.delayed(const Duration(seconds: 600));
+        resetAll();
       }
       changeIsLoading(ref, false);
       onClicked = false;
-      await Future.delayed(const Duration(milliseconds: 300));
-      resetAll();
     }
+  }
+
+  void verifyPhoneNumber() {
+    auth
+        .verifyPhoneNumber(
+      phoneNumber: '+91${phoneCtr.text}',
+      verificationCompleted: (e) {},
+      verificationFailed: (e) {},
+      codeSent: (id, token) {
+        verificationId = id;
+      },
+      codeAutoRetrievalTimeout: (e) {},
+    )
+        .then((v) {
+      // if otp send successfully then move to otp verification screen
+      Navigation.pushMaterial(LoginOtpVerificationScreen());
+    });
+  }
+
+  Future<bool> verifyOTP() async {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: otpCtr.text,
+    );
+    bool isVerified = false;
+    try {
+      // validating user otp
+      await auth.signInWithCredential(credential).then((v) {
+        isVerified = true;
+      });
+    } catch (e) {
+      toast("wrong otp");
+      isVerified = false;
+    }
+    return isVerified;
   }
 }
 

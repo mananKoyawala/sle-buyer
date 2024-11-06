@@ -31,6 +31,7 @@ class SignupOtpVerificationScreen extends ConsumerWidget
               Form(
                 key: ctr.formKey2,
                 child: textFormField(
+                  autofocus: true,
                   context: context,
                   funValidate: (val) => Validator.requiredOTP(val),
                   controller: ctr.otpCtr,
