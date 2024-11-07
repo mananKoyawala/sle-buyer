@@ -15,6 +15,18 @@ class Signup extends ConsumerWidget with text_with_button, formField, utils {
     var ctr = ref.read(signupControllerProvider);
     var isTermsAccepted = ref.watch(termsAndConditionProvider);
     var isLoading = ref.watch(isLoadingSignupProvider);
+
+    Future<void> datePicker(BuildContext context) async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          firstDate: DateTime(1960),
+          lastDate: DateTime(2019));
+
+      if (picked != null) {
+        ctr.changeDate(picked.toString().split(" ")[0]);
+      }
+    }
+
     return Column(
       children: [
         Column(
@@ -79,6 +91,22 @@ class Signup extends ConsumerWidget with text_with_button, formField, utils {
                     textInputAction: TextInputAction.done,
                     fieldColor: Colors.green,
                     onClickColor: Colors.green,
+                  ),
+                  sizeH25(),
+                  textFormField(
+                    context: context,
+                    funValidate: (val) => Validator.fieldRequired(val),
+                    controller: ctr.dateCtr,
+                    prefixIcon:
+                        const Icon(Icons.date_range, color: Colors.green),
+                    isborder: true,
+                    hintText: "Date of Birth",
+                    readOnly: true,
+                    fieldColor: Colors.green,
+                    onClickColor: Colors.green,
+                    onTap: () {
+                      datePicker(context);
+                    },
                   ),
                 ],
               ),

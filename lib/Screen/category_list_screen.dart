@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Package/Text_Button.dart';
 import 'package:sle_buyer/Package/Utils.dart';
 import 'package:sle_buyer/provider/category_list_provider.dart';
-import 'package:sle_buyer/provider/show_category_provider.dart';
 
 import '../Package/PackageConstants.dart';
 import 'show_category_screen.dart';

@@ -13,6 +13,7 @@ class SignupController with firebase {
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
   String verificationId = "";
+  bool isSignedup = false;
 
   final firstNameCtr = TextEditingController();
   final lastNameCtr = TextEditingController();
@@ -20,6 +21,7 @@ class SignupController with firebase {
   final phoneCtr = TextEditingController();
   final addressCtr = TextEditingController();
   final otpCtr = TextEditingController();
+  final dateCtr = TextEditingController();
 
   // called when controller no longer neeed
   void resetAll() {
@@ -30,6 +32,7 @@ class SignupController with firebase {
     phoneCtr.clear();
     addressCtr.clear();
     otpCtr.clear();
+    dateCtr.clear();
   }
 
   void onSubmit1(WidgetRef ref) async {
@@ -66,28 +69,32 @@ class SignupController with firebase {
       onClicked = true;
       changeIsLoadingSingup(ref, true);
 
-// verify otp
+      // verify otp
       bool isVerified = await verifyOTP();
 
       //  call buyer api
       if (isVerified) {
         final apiHelper = BuyerApiHelper();
-        bool isSignedup = await apiHelper.buyerSignup(
+        isSignedup = await apiHelper.buyerSignup(
             firstNameCtr.text,
             lastNameCtr.text,
             emailCtr.text,
             "https://images.pexels.com/photos/1520760/pexels-photo-1520760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
             addressCtr.text,
             phoneCtr.text,
-            "2002-02-02");
+            dateCtr.text);
         if (isSignedup) {
           Navigation.pushMaterial(Dashboard());
-          await Future.delayed(const Duration(milliseconds: 600));
-          resetAll();
+          // reset all controller with caution
         }
       }
       changeIsLoadingSingup(ref, false);
       onClicked = false;
+    }
+
+    if (isSignedup) {
+      await Future.delayed(const Duration(milliseconds: 600));
+      resetAll();
     }
   }
 
@@ -124,6 +131,10 @@ class SignupController with firebase {
       isVerified = false;
     }
     return isVerified;
+  }
+
+  changeDate(String val) {
+    dateCtr.text = val;
   }
 }
 

@@ -6,14 +6,13 @@ import 'package:sle_buyer/helper/buyer_api_helper.dart';
 import '../../Screen/Auth/login_otp_verification_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../Screen/dashboard.dart';
-
 class LoginController with firebase {
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
   final phoneCtr = TextEditingController();
   final otpCtr = TextEditingController();
   String verificationId = "";
+  bool isVerified = false;
   bool onClicked = false; // to prevent from multiple clicks
   // Dispose method to be called when this controller is no longer needed
   void resetAll() {
@@ -48,18 +47,26 @@ class LoginController with firebase {
       onClicked = true;
       changeIsLoading(ref, true);
       // verify otp
-      bool isVerified = await verifyOTP();
+      isVerified = await verifyOTP();
 
+      // if verified then proceed
       if (isVerified) {
+        // if loggedIn true then it will be on home page
         bool isLoggedIn = await apiHelper.buyerLogin(phoneCtr.text);
         if (!isLoggedIn) {
           Navigation.pop();
         }
-        await Future.delayed(const Duration(seconds: 600));
-        resetAll();
+        printDebug(">>>debug1");
       }
       changeIsLoading(ref, false);
       onClicked = false;
+      printDebug(">>>debug2");
+    }
+    if (isVerified) {
+      printDebug(">>>debug3");
+      await Future.delayed(const Duration(milliseconds: 150));
+      resetAll();
+      printDebug(">>>debug4");
     }
   }
 

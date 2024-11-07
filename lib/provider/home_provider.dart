@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sle_buyer/provider/Auth/login_provider.dart';
+import 'package:sle_buyer/provider/Auth/signup_provider.dart';
 import '../../Package/PackageConstants.dart';
 import '../../helper/product_api_helper.dart';
 import '../../models/Product.dart';
@@ -21,7 +23,6 @@ class ProductNotifier extends AutoDisposeNotifier<ProductState> {
   ProductState build() {
     printDebug(">>>passed");
     state = ProductState(products: [], isLoading: true);
-    // fetchData();
     init(); // Initialize data if necessary
     return state;
   }

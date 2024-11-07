@@ -26,7 +26,16 @@ class ShowCategoryScreen extends ConsumerWidget with text_with_button, utils {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             sizeH25(),
-            text(text: category, fontSize: 24),
+            Row(
+              children: [
+                iconButton(
+                    onTap: () {
+                      Navigation.pop();
+                    },
+                    icon: const Icon(Icons.arrow_back)),
+                text(text: category, fontSize: 24),
+              ],
+            ),
             sizeH10(),
             Expanded(
               child: productsAsyncValue.when(
@@ -52,7 +61,9 @@ class ShowCategoryScreen extends ConsumerWidget with text_with_button, utils {
                 ),
                 error: (error, stack) {
                   // Handle the error state
-                  return Center(child: Text("Failed to load products: $error"));
+                  return Center(
+                      child:
+                          text(text: "Failed to load products", fontSize: 18));
                 },
               ),
             ),
