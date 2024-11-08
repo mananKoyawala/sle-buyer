@@ -1,3 +1,5 @@
+import 'package:sle_buyer/Screen/product_details_screen.dart';
+
 import '../../Package/PackageConstants.dart';
 import '../../Package/RippleEffect/RippleEffectContainer.dart';
 import '../../Package/Text_Button.dart';
@@ -6,6 +8,7 @@ import '../../helper/product_api_helper.dart';
 import '../../models/Product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductContainer extends StatelessWidget with text_with_button, utils {
   ProductContainer({super.key, required this.product, required this.ref});
@@ -19,18 +22,18 @@ class ProductContainer extends StatelessWidget with text_with_button, utils {
       child: ClickEffect(
         onTap: () {
           // show products details
+          Navigation.pushMaterial(ProductDetailsScreen(product: product));
         },
         borderRadius: radius(20),
         child: Container(
-          height: 170,
+          height: 160,
           width: getScreenWidth(context),
           decoration:
-              BoxDecoration(color: Colors.green[100], borderRadius: radius(20)),
+              BoxDecoration(color: Colors.green[50], borderRadius: radius(20)),
           child: Row(
             children: [
               Container(
                 width: getScreenWidth(context) * .35,
-                margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                     color: Colors.white, borderRadius: radius(20)),
                 child: ClipRRect(
@@ -40,7 +43,7 @@ class ProductContainer extends StatelessWidget with text_with_button, utils {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Center(
-                          child: text(text: "No Image", fontSize: 16));
+                          child: text(text: "No Image", fontSize: 18));
                     },
                   ),
                 ),
@@ -51,21 +54,43 @@ class ProductContainer extends StatelessWidget with text_with_button, utils {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   sizeH10(),
-                  text(text: product.name, fontSize: 18, fontWeight: 5),
-                  sizeH(5),
+                  overFlowText(
+                      h: 20,
+                      w: getScreenWidth(context) / 2,
+                      text: product.name,
+                      fontSize: 16,
+                      fontWeight: 5,
+                      overflow: TextOverflow.ellipsis),
+                  sizeH(10),
                   overFlowText(
                       h: 20,
                       w: getScreenWidth(context) / 2,
                       maxLines: 1,
                       text: product.brand,
-                      fontSize: 16,
+                      fontSize: 14,
                       overflow: TextOverflow.ellipsis),
                   sizeH(10),
                   text(
-                      text: "${product.price}₹ / Piece",
+                      text: "₹${product.price} / piece",
                       fontSize: 16,
                       textColor: Colors.green),
                   sizeH(10),
+                  simpleButton(
+                      height: 40,
+                      width: 100,
+                      onTap: () async {
+                        final Uri phoneUri =
+                            Uri(scheme: 'tel', path: product.seller_phone);
+                        if (await canLaunchUrl(phoneUri)) {
+                          await launchUrl(phoneUri);
+                        } else {
+                          toast("Unable to call right now");
+                        }
+                      },
+                      title: text(
+                          text: "Call now",
+                          fontSize: 16,
+                          textColor: Colors.white))
                 ],
               )
             ],

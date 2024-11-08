@@ -64,11 +64,15 @@ mixin text_with_button {
   Widget simpleButton({
     double? height,
     double? width,
+    double? prefixIconGap,
+    double? suffixIconGap,
     Color? backgroundColor,
     double? borderRadius,
     Widget? title,
     required VoidCallback onTap,
     BoxBorder? border,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
   }) {
     return ClickEffect(
       onTap: onTap,
@@ -84,6 +88,8 @@ mixin text_with_button {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            prefixIcon ?? Container(),
+            SizedBox(width: prefixIconGap ?? 0),
             title ??
                 text(
                   text: 'Add to Cart',
@@ -91,6 +97,8 @@ mixin text_with_button {
                   textColor: white,
                   fontWeight: 5,
                 ),
+            SizedBox(width: suffixIconGap ?? 0),
+            suffixIcon ?? Container(),
           ],
         ),
       ),
