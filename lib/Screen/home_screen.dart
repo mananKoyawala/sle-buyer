@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sle_buyer/Package/TextFormField.dart';
+import 'package:sle_buyer/Screen/search_products.dart';
 import '../../Package/PackageConstants.dart';
 import '../../Package/Text_Button.dart';
 import '../../Package/Utils.dart';
@@ -6,9 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../provider/home_provider.dart';
 import '../Utils/Widgets/ProductContainer.dart';
 import '../Utils/Widgets/ProductShimmerContainer.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class HomeScreen extends ConsumerWidget with text_with_button, utils {
-  const HomeScreen({super.key});
+class HomeScreen extends ConsumerWidget
+    with text_with_button, formField, utils {
+  HomeScreen({super.key});
+  TextEditingController searchTextField = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,6 +30,77 @@ class HomeScreen extends ConsumerWidget with text_with_button, utils {
                   children: [
                     sizeH(50),
                     text(text: "Your Products", fontSize: 22, fontWeight: 5),
+                    sizeH25(),
+                    textFormField(
+                        context: context,
+                        funValidate: (val) => null,
+                        borderRadius: 30,
+                        readOnly: true,
+                        onTap: () {
+                          showModalBottomSheet(
+                              isScrollControlled: true,
+                              enableDrag: true,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(0))),
+                              context: context,
+                              builder: (context) => Container(
+                                    height: getScreenHeight(context),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        sizeH(45),
+                                        textFormField(
+                                            onFieldSubmitted: (val) {
+                                              toast("Clicked");
+                                              Navigation.pop();
+                                              Navigation.pushMaterial(
+                                                  SearchResultScreen(
+                                                      searchTextField.text));
+                                              return null;
+                                            },
+                                            context: context,
+                                            funValidate: (val) =>
+                                                Validator.fieldRequired(val),
+                                            borderRadius: 30,
+                                            contentPadding:
+                                                const EdgeInsets.all(0),
+                                            prefixIcon: const Icon(
+                                              Icons.search,
+                                              color: Colors.green,
+                                            ),
+                                            hintText: "Search here...",
+                                            controller: searchTextField,
+                                            isborder: true,
+                                            textInputType: TextInputType.text,
+                                            textInputAction:
+                                                TextInputAction.search,
+                                            suffixIcon: iconButton(
+                                              onTap: () {
+                                                Navigation.pop();
+                                              },
+                                              icon: const Center(
+                                                child: FaIcon(
+                                                  FontAwesomeIcons
+                                                      .xmark, // This is a simple cross icon
+                                                  color: Colors.green,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ))
+                                      ],
+                                    ),
+                                  ));
+                        },
+                        contentPadding: const EdgeInsets.all(0),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.green,
+                        ),
+                        hintText: "Search here...",
+                        isborder: true),
                     sizeH25(),
                     productList.isLoading
                         ? ListView.builder(

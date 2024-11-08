@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sle_buyer/Package/PackageConstants.dart';
 
 class ApiService {
   final String baseURL = dotenv.env['API_URL'] ?? '';
@@ -60,5 +61,10 @@ class ApiService {
   Future<http.Response> getAllProductsByCategory(String category) async {
     return await http
         .get(Uri.parse('$baseURL/products/category?category=$category'));
+  }
+
+  Future<http.Response> searchProducts(String searchString) async {
+    printDebug(">>>" + searchString);
+    return await http.get(Uri.parse('$baseURL/products/search/$searchString'));
   }
 }

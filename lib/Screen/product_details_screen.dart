@@ -18,11 +18,27 @@ class ProductDetailsScreen extends StatelessWidget
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           sizeH(45),
-          text(
-              text: "Product Details",
-              fontSize: 26,
-              textAlign: TextAlign.center,
-              fontWeight: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              iconButton(
+                  onTap: () {
+                    Navigation.pop();
+                  },
+                  icon: const Icon(Icons.arrow_back)),
+              text(
+                  text: "Product Details",
+                  fontSize: 26,
+                  // textAlign: TextAlign.center,
+                  fontWeight: 5),
+              iconButton(
+                  onTap: () {},
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 0,
+                  )),
+            ],
+          ),
           sizeH10(),
           Expanded(
               child: CP(

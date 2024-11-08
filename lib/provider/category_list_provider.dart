@@ -123,22 +123,6 @@ class CategoryNotifier extends AutoDisposeNotifier<CategoryState> {
     Icons.palette, // Hobbies & Collections
     Icons.factory, // Industrial & Equipments
   ];
-
-  Future<void> fetchData() async {
-    state = CategoryState(products: state.products, isLoading: true);
-    try {
-      final products = await helper.getAllProducts();
-      state = CategoryState(products: products, isLoading: false);
-    } catch (e) {
-      state = CategoryState(products: [], isLoading: false);
-      printDebug(e.toString());
-      toast("Failed to load products");
-    }
-  }
-
-  void resetProducts() {
-    state = CategoryState(products: [], isLoading: false);
-  }
 }
 
 final categoryProvider =

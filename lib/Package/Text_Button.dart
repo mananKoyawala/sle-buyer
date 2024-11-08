@@ -109,7 +109,7 @@ mixin text_with_button {
   Widget iconButton({
     required void Function()? onTap,
     double? height,
-    Icon? icon,
+    Widget? icon,
     radius,
   }) {
     return ClickEffect(

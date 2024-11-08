@@ -11,6 +11,7 @@ mixin formField {
     TextEditingController? controller,
     bool? showCursor,
     required String? Function(String?) funValidate,
+    String? Function(String?)? onFieldSubmitted,
     Color? cursorColor,
     bool? obsecureText,
     TextInputType? textInputType,
@@ -34,6 +35,7 @@ mixin formField {
   }) {
     double bottomInsets = MediaQuery.of(context).viewInsets.bottom;
     return TextFormField(
+        onFieldSubmitted: onFieldSubmitted,
         readOnly: readOnly ?? false,
         autofocus: autofocus ?? false,
         textInputAction: textInputAction ?? TextInputAction.next,
@@ -75,10 +77,12 @@ mixin formField {
                   color: Colors.grey[500]),
           enabledBorder: isborder == false
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                 )
               : OutlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                   borderRadius:
                       BorderRadius.all(Radius.circular(borderRadius ?? 10))),
           errorBorder: isborder == false
@@ -91,28 +95,34 @@ mixin formField {
                       BorderRadius.all(Radius.circular(borderRadius ?? 10))),
           focusedErrorBorder: isborder == false
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                 )
               : OutlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                   borderRadius:
                       BorderRadius.all(Radius.circular(borderRadius ?? 10))),
           focusedBorder: isborder == false
               ? UnderlineInputBorder(
                   borderSide: BorderSide(
-                      color: onClickColor ?? black, width: borderWidth ?? 1.5),
+                      color: onClickColor ?? Theme.of(context).primaryColor,
+                      width: borderWidth ?? 1.5),
                 )
               : OutlineInputBorder(
                   borderSide: BorderSide(
-                      color: onClickColor ?? black, width: borderWidth ?? 1.5),
+                      color: onClickColor ?? Theme.of(context).primaryColor,
+                      width: borderWidth ?? 1.5),
                   borderRadius:
                       BorderRadius.all(Radius.circular(borderRadius ?? 10))),
           border: isborder == false
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                 )
               : OutlineInputBorder(
-                  borderSide: BorderSide(color: fieldColor ?? black),
+                  borderSide: BorderSide(
+                      color: fieldColor ?? Theme.of(context).primaryColor),
                   borderRadius:
                       BorderRadius.all(Radius.circular(borderRadius ?? 10))),
         ));
