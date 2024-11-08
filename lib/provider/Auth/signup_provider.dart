@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Screen/Auth/signup_otp_verification_screen.dart';
@@ -7,6 +9,7 @@ import 'package:sle_buyer/helper/buyer_api_helper.dart';
 
 import '../../Package/PackageConstants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SignupController with firebase {
   bool onClicked = false; // to prevent from multiple clicks
@@ -22,6 +25,8 @@ class SignupController with firebase {
   final addressCtr = TextEditingController();
   final otpCtr = TextEditingController();
   final dateCtr = TextEditingController();
+  File? image;
+  String image_url = "";
 
   // called when controller no longer neeed
   void resetAll() {
@@ -33,12 +38,21 @@ class SignupController with firebase {
     addressCtr.clear();
     otpCtr.clear();
     dateCtr.clear();
+    image = null;
+    image_url = "";
   }
 
   void onSubmit1(WidgetRef ref) async {
     var isTermsAccepted = ref.watch(termsAndConditionProvider);
 
     if (formKey1.currentState!.validate() && !onClicked) {
+      // check image picked
+      if (image == null) {
+        toast("Please select image");
+        return;
+      }
+
+      // check terms and conditions are accepted or not
       if (!isTermsAccepted) {
         toast("Please accept Terms and Conditons!");
         return;
@@ -46,9 +60,11 @@ class SignupController with firebase {
       onClicked = true;
       changeIsLoadingSingup(ref, true);
 
+      // check user already exists wtih phone number
       final apiHelper = BuyerApiHelper();
       bool isExists = await apiHelper.isBuyerExists(phoneCtr.text);
       if (!isExists) {
+        // verify user phone number
         verifyPhoneNumber();
       } else {
         toast("User already exist with Phone number");
@@ -59,39 +75,51 @@ class SignupController with firebase {
   }
 
   void onSubmit2(WidgetRef ref) async {
-    var isTermsAccepted = ref.watch(termsAndConditionProvider);
-
     if (formKey2.currentState!.validate() && !onClicked) {
-      if (!isTermsAccepted) {
-        toast("Please accept Terms and Conditons!");
-        return;
-      }
       onClicked = true;
       changeIsLoadingSingup(ref, true);
 
       // verify otp
       bool isVerified = await verifyOTP();
+      changeIsLoadingSingup(ref, false);
+      // otp wrong then return
+      if (!isVerified) {
+        onClicked = false;
+        return;
+      }
 
-      //  call buyer api
+      //  add image to firebase
+      changeSignupImageUploaded(ref, true);
+      bool isImageUploaded = await _uploadImage();
+      if (!isImageUploaded) {
+        toast("Failed to upload image");
+        onClicked = false;
+        changeSignupImageUploaded(ref, false);
+        return;
+      }
+      changeSignupImageUploaded(ref, false);
+      changeIsLoadingSingup(ref, true);
+
+      //  if image is added then add all details in database
       if (isVerified) {
         final apiHelper = BuyerApiHelper();
         isSignedup = await apiHelper.buyerSignup(
             firstNameCtr.text,
             lastNameCtr.text,
-            emailCtr.text,
-            "https://images.pexels.com/photos/1520760/pexels-photo-1520760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            emailCtr.text.toLowerCase(),
+            image_url,
             addressCtr.text,
             phoneCtr.text,
             dateCtr.text);
         if (isSignedup) {
-          Navigation.pushMaterial(Dashboard());
-          // reset all controller with caution
+          // move to home page
+          Navigation.pushMaterialAndRemoveUntil(Dashboard());
         }
       }
       changeIsLoadingSingup(ref, false);
       onClicked = false;
     }
-
+    // reset all controller with caution
     if (isSignedup) {
       await Future.delayed(const Duration(milliseconds: 600));
       resetAll();
@@ -136,6 +164,28 @@ class SignupController with firebase {
   changeDate(String val) {
     dateCtr.text = val;
   }
+
+  Future<bool> _uploadImage() async {
+    if (image == null) return false;
+
+    try {
+      // Define a unique path for the image
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child('sle/buyer/$fileName');
+
+      // Upload the file
+      await firebaseStorageRef.putFile(image!);
+
+      // Get the download URL
+      image_url = await firebaseStorageRef.getDownloadURL();
+      printDebug(">>>Image uploaded successfully. Download URL: $image_url");
+      return true;
+    } catch (e) {
+      printDebug(">>>Error uploading image: $e");
+      return false;
+    }
+  }
 }
 
 final signupControllerProvider = Provider((ref) => SignupController());
@@ -148,9 +198,16 @@ void changeTermsAndCondition(WidgetRef ref) {
       !ref.read(termsAndConditionProvider);
 }
 
-// obsecure text provider
+// to show progressing
 final isLoadingSignupProvider = StateProvider<bool>((ref) => false);
 
 void changeIsLoadingSingup(WidgetRef ref, bool val) {
   ref.read(isLoadingSignupProvider.notifier).state = val;
+}
+
+// to show image being uploaded
+final isSignupImageUploadedProvider = StateProvider<bool>((ref) => false);
+
+void changeSignupImageUploaded(WidgetRef ref, bool val) {
+  ref.read(isSignupImageUploadedProvider.notifier).state = val;
 }

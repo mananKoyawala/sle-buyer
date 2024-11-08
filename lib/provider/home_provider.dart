@@ -1,6 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sle_buyer/provider/Auth/login_provider.dart';
-import 'package:sle_buyer/provider/Auth/signup_provider.dart';
 import '../../Package/PackageConstants.dart';
 import '../../helper/product_api_helper.dart';
 import '../../models/Product.dart';

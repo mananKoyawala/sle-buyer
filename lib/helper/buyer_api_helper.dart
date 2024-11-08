@@ -26,7 +26,6 @@ class BuyerApiHelper {
       await pref.getUserData();
       await Future.delayed(const Duration(milliseconds: 150));
       toast("User login successful.");
-      Navigation.pushMaterialAndRemoveUntil(const Dashboard());
       return true;
     } else {
       final responseBody = jsonDecode(response.body);

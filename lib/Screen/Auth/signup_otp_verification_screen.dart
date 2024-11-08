@@ -14,6 +14,7 @@ class SignupOtpVerificationScreen extends ConsumerWidget
   Widget build(BuildContext context, WidgetRef ref) {
     final ctr = ref.read(signupControllerProvider);
     final isLoading = ref.watch(isLoadingSignupProvider);
+    final imageUploading = ref.watch(isSignupImageUploadedProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: CP(
@@ -50,7 +51,11 @@ class SignupOtpVerificationScreen extends ConsumerWidget
                     ctr.onSubmit2(ref);
                   },
                   title: text(
-                    text: isLoading ? "Verifying..." : "Submit",
+                    text: isLoading
+                        ? "Verifying..."
+                        : imageUploading
+                            ? 'Image being uploaded...'
+                            : "Submit",
                     fontSize: 18,
                     fontWeight: 5,
                     textColor: Colors.white,

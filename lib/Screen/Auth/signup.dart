@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../../Package/PackageConstants.dart';
 import '../../Package/TextFormField.dart';
@@ -5,11 +7,12 @@ import '../../Package/Text_Button.dart';
 import '../../Package/Utils.dart';
 import '../../provider/Auth/signup_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Signup extends ConsumerWidget with text_with_button, formField, utils {
   Signup({super.key});
 
-  // SignupController ctr = SignupController();
+  final ImagePicker _picker = ImagePicker();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var ctr = ref.read(signupControllerProvider);
@@ -108,6 +111,28 @@ class Signup extends ConsumerWidget with text_with_button, formField, utils {
                       datePicker(context);
                     },
                   ),
+                  sizeH25(),
+                  textFormField(
+                    context: context,
+                    funValidate: (val) => null,
+                    prefixIcon: const Icon(Icons.image, color: Colors.green),
+                    isborder: true,
+                    hintText: ctr.image == null
+                        ? "Pick profile picture"
+                        : "Image is picked",
+                    readOnly: true,
+                    fieldColor: Colors.green,
+                    onClickColor: Colors.green,
+                    onTap: () async {
+                      final XFile? pickedFile =
+                          await _picker.pickImage(source: ImageSource.gallery);
+
+                      if (pickedFile != null) {
+                        ctr.image = File(pickedFile.path);
+                        printDebug(">>>${ctr.image}");
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -146,7 +171,7 @@ class Signup extends ConsumerWidget with text_with_button, formField, utils {
                     ctr.onSubmit1(ref);
                   },
                   title: text(
-                    text: isLoading ? "Processing..." : "Sing Up",
+                    text: isLoading ? "Processing..." : "Sign Up",
                     fontSize: 18,
                     fontWeight: 5,
                     textColor: Colors.white,
