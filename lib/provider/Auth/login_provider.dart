@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Package/PackageConstants.dart';
+import 'package:sle_buyer/Screen/dashboard.dart';
 import 'package:sle_buyer/helper/Firebase/firebase.dart';
 import 'package:sle_buyer/helper/buyer_api_helper.dart';
 import '../../Screen/Auth/login_otp_verification_screen.dart';
@@ -53,8 +54,8 @@ class LoginController with firebase {
       if (isVerified) {
         // if loggedIn true then it will be on home page
         bool isLoggedIn = await apiHelper.buyerLogin(phoneCtr.text);
-        if (!isLoggedIn) {
-          Navigation.pop();
+        if (isLoggedIn) {
+          Navigation.pushMaterialAndRemoveUntil(const Dashboard());
         }
         printDebug(">>>debug1");
       }
