@@ -38,11 +38,6 @@ class CategoryScreen extends ConsumerWidget with text_with_button, utils {
                     onTap: () async {
                       // Call fetchData for the selected category
                       final selectedCategory = categoriesList[index];
-                      // await ref
-                      //     .read(showCategoryProductsProvider.notifier)
-                      //     .fetchData("Electronics");
-
-                      // Navigate to the HomeScreen or the screen that displays products
                       Navigation.pushMaterial(
                           ShowCategoryScreen(category: selectedCategory));
                     },

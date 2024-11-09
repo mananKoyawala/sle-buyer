@@ -49,7 +49,7 @@ mixin text_with_button {
       child: Text(
         text,
         maxLines: maxLines,
-        overflow: overflow,
+        overflow: overflow ?? TextOverflow.ellipsis,
         textAlign: textAlign,
         style: TextStyle(
             fontSize: fontSize,

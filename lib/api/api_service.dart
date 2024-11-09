@@ -59,12 +59,25 @@ class ApiService {
   }
 
   Future<http.Response> getAllProductsByCategory(String category) async {
+    String encodedCategory =
+        Uri.encodeComponent(category); // URL encode the category
+    printDebug(">>> '$baseURL/products/category?category=$encodedCategory'");
     return await http
-        .get(Uri.parse('$baseURL/products/category?category=$category'));
+        .get(Uri.parse('$baseURL/products/category?category=$encodedCategory'));
+  }
+
+  Future<http.Response> getAllSimilarProducts(
+      String seller_id, String category) async {
+    String encodedCategory =
+        Uri.encodeComponent(category); // URL encode the category
+    printDebug(">>> '$baseURL/products/category?category=$encodedCategory'");
+    return await http.get(Uri.parse(
+        '$baseURL/products/category?category=$encodedCategory&s_id=$seller_id'));
   }
 
   Future<http.Response> searchProducts(String searchString) async {
-    printDebug(">>>" + searchString);
-    return await http.get(Uri.parse('$baseURL/products/search/$searchString'));
+    String encodedSearchString = Uri.encodeComponent(searchString);
+    return await http
+        .get(Uri.parse('$baseURL/products/search/$encodedSearchString'));
   }
 }
