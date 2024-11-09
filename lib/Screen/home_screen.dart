@@ -54,13 +54,14 @@ class HomeScreen extends ConsumerWidget
                                         sizeH(45),
                                         textFormField(
                                             onFieldSubmitted: (val) {
-                                              toast("Clicked");
                                               Navigation.pop();
                                               Navigation.pushMaterial(
                                                   SearchResultScreen(
                                                       searchTextField.text));
+                                              searchTextField.clear();
                                               return null;
                                             },
+                                            autofocus: true,
                                             context: context,
                                             funValidate: (val) =>
                                                 Validator.fieldRequired(val),
@@ -79,6 +80,7 @@ class HomeScreen extends ConsumerWidget
                                                 TextInputAction.search,
                                             suffixIcon: iconButton(
                                               onTap: () {
+                                                searchTextField.clear();
                                                 Navigation.pop();
                                               },
                                               icon: const Center(
