@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sle_buyer/Screen/bookmarked_product_screen.dart';
 import '../../Package/PackageConstants.dart';
 import '../../Package/RippleEffect/RippleEffectContainer.dart';
 import '../../Package/Text_Button.dart';
@@ -110,6 +111,13 @@ class ProfileScreen extends ConsumerWidget with text_with_button, utils {
                     icon: Icons.person,
                     title: "My Profile",
                     subtitle: "Edit your personal information"),
+                AccounttList(
+                    onTap: () {
+                      Navigation.pushMaterial(const BookmarkedProductScreen());
+                    },
+                    icon: Icons.bookmark,
+                    title: "Bookmark",
+                    subtitle: "See your all bookmarked"),
                 AccounttList(
                     onTap: () {
                       toast("Notification featue will be soon");

@@ -11,6 +11,8 @@ import '../Utils/Widgets/ProductContainer.dart';
 import '../Utils/Widgets/ProductShimmerContainer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../provider/bookmarked_product_provider.dart';
+
 class HomeScreen extends ConsumerWidget
     with text_with_button, formField, utils {
   HomeScreen({super.key});
@@ -19,6 +21,9 @@ class HomeScreen extends ConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productList = ref.watch(productsProvider);
+    ref.watch(
+        getAllBookmarkedProductsProvider); // get bookmarked products in advance
+
     return SafeArea(
       child: Scaffold(
         body: CP(

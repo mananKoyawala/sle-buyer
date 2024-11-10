@@ -12,9 +12,11 @@ class Product {
   final String seller_first_name;
   final String seller_last_name;
   final String seller_phone;
+  final String product_bookmark_id;
 
   Product(
       {required this.seller_first_name,
+      required this.product_bookmark_id,
       required this.seller_last_name,
       required this.seller_phone,
       required this.id,
@@ -43,6 +45,7 @@ class Product {
       seller_first_name: json["s_first_name"] ?? '', // it might be null
       seller_last_name: json["s_last_name"] ?? '',
       seller_phone: json["s_phone"] ?? '',
+      product_bookmark_id: json["bookmark_id"] ?? '',
     );
   }
 }

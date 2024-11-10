@@ -74,7 +74,7 @@ class ProductApiHelper {
     }
   }
 
-  // * get similar products
+  // get similar products
   Future<List<Product>> getAllSimilarProducts(
       String seller_id, String category) async {
     await Future.delayed(const Duration(milliseconds: 150));
@@ -95,6 +95,50 @@ class ProductApiHelper {
       final data = responseBody["error"] ?? '';
       printDebug(">>>$data");
       return [];
+    }
+  }
+
+  Future<List<Product>> getBookmarkedProducts() async {
+    await Future.delayed(const Duration(milliseconds: 150));
+
+    final response = await apiService.getBookmarkedProducts(pref.id);
+    final responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      final dataList = responseBody["data"] as List<dynamic>? ?? [];
+      final List<Product> products =
+          dataList.map((data) => Product.fromJson(data)).toList();
+
+      printDebug(">>>${products.length}");
+      return products;
+    } else {
+      final data = responseBody["error"] ?? '';
+      printDebug(">>>$data");
+      return [];
+    }
+  }
+
+  Future<bool> addProductBookmark(String productId) async {
+    await Future.delayed(const Duration(milliseconds: 150));
+
+    final response = await apiService.addProductBookmark(productId, pref.id);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> deleteProductBookmark(String productId) async {
+    await Future.delayed(const Duration(milliseconds: 150));
+
+    final response = await apiService.deleteProductBookmark(productId);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

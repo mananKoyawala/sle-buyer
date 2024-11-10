@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../provider/bookmarked_product_provider.dart';
+
 class ProductContainer extends StatelessWidget with text_with_button, utils {
   ProductContainer({super.key, required this.product, required this.ref});
   final Product product;
@@ -22,6 +24,8 @@ class ProductContainer extends StatelessWidget with text_with_button, utils {
       child: ClickEffect(
         onTap: () {
           // show products details
+          final notifier = ref.read(getAllBookmarkedProductsProvider.notifier);
+          notifier.isProductBookmarked(product);
           Navigation.pushMaterial(ProductDetailsScreen(product: product));
         },
         borderRadius: radius(20),

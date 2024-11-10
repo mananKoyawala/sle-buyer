@@ -80,4 +80,17 @@ class ApiService {
     return await http
         .get(Uri.parse('$baseURL/products/search/$encodedSearchString'));
   }
+
+  Future<http.Response> getBookmarkedProducts(String buyerId) async {
+    return await http.get(Uri.parse('$baseURL/bookmarks/all/$buyerId'));
+  }
+
+  Future<http.Response> addProductBookmark(
+      String productId, String buyerId) async {
+    return await http.get(Uri.parse('$baseURL/bookmarks/$productId/$buyerId'));
+  }
+
+  Future<http.Response> deleteProductBookmark(String productId) async {
+    return await http.delete(Uri.parse('$baseURL/bookmarks/$productId'));
+  }
 }
