@@ -24,6 +24,7 @@ class ProductDetailsScreen extends ConsumerWidget with text_with_button, utils {
         body: CP(
       h: 16,
       child: ListView(
+        padding: const EdgeInsets.all(0),
         children: [
           sizeH(45),
           Row(
@@ -93,6 +94,20 @@ class ProductDetailsScreen extends ConsumerWidget with text_with_button, utils {
               text: "Minimum quantity for order : ${product.quantity}",
               fontSize: 14,
               fontWeight: 5),
+          sizeH25(),
+          Row(
+            children: [
+              text(
+                text: 'Owner : ',
+                fontSize: 16,
+              ),
+              text(
+                  text:
+                      '${product.seller_first_name} ${product.seller_last_name}',
+                  fontSize: 18,
+                  fontWeight: 5),
+            ],
+          ),
           sizeH25(),
           Row(
             children: [
@@ -244,6 +259,7 @@ class ProductDetailsScreen extends ConsumerWidget with text_with_button, utils {
                       text(text: "There is no product to show", fontSize: 18));
             },
           ),
+          sizeH25(),
         ],
       ),
     ));

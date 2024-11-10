@@ -71,8 +71,8 @@ class ApiService {
     String encodedCategory =
         Uri.encodeComponent(category); // URL encode the category
     printDebug(">>> '$baseURL/products/category?category=$encodedCategory'");
-    return await http.get(Uri.parse(
-        '$baseURL/products/category?category=$encodedCategory&s_id=$seller_id'));
+    return await http
+        .get(Uri.parse('$baseURL/products/category?category=$encodedCategory'));
   }
 
   Future<http.Response> searchProducts(String searchString) async {
