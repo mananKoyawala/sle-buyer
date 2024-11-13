@@ -4,7 +4,6 @@ import '../../Package/Text_Button.dart';
 import '../../Package/Utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Utils/Widgets/ProductContainer.dart';
-import '../Utils/Widgets/ProductShimmerContainer.dart';
 import '../provider/bookmarked_product_provider.dart';
 
 class BookmarkedProductScreen extends ConsumerWidget
@@ -31,7 +30,7 @@ class BookmarkedProductScreen extends ConsumerWidget
                         Navigation.pop();
                       },
                       icon: const Icon(Icons.arrow_back)),
-                  text(text: "My Bookmarkes", fontSize: 24),
+                  text(text: "My Bookmarks", fontSize: 24),
                 ],
               ),
               sizeH10(),

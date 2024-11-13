@@ -71,6 +71,7 @@ class BookmarkProductNotifier extends Notifier<BookmarkProductState> {
 
   void resetProducts() {
     state = BookmarkProductState(products: [], isLoading: false);
+    printDebug(">>> ${state.products}");
   }
 
   ProductApiHelper apiHelper = ProductApiHelper();
