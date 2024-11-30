@@ -3,6 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sle_buyer/Package/PackageConstants.dart';
 
+import '../Service/NavigatorKey.dart';
+import '../Utils/Widgets/no_internet.dart';
+import '../Utils/constants.dart';
+import '../connection/connectivity_helper.dart';
+
 class ApiService {
   final String baseURL = dotenv.env['API_URL'] ?? '';
 
@@ -50,47 +55,55 @@ class ApiService {
     );
   }
 
-  Future<http.Response> getProductByID(String product_id) async {
-    return await http.get(Uri.parse('$baseURL/products/$product_id'));
-  }
+  // * common function that performs final api calls which handles connectivity checks and potential exceptions
+  Future<http.Response> performRequest({
+    required String method,
+    required String endpoint,
+    Map<String, String>? headers,
+    Map<String, dynamic>? body,
+    Function? onNoInternet, // call back for handling no internet
+  }) async {
+    // * check here internet connectivity
+    final hasInternet = await ConnectivityHelper.hasInternetConnection();
+    printDebug(">>>*$hasInternet");
+    if (!hasInternet) {
+      if (onNoInternet != null) {
+        onNoInternet();
+      } else {
+        showNoInternetDialog(context: navigatorContext);
+      }
+      return http.Response('{"error":"No Internet Connection"}', 503);
+    }
+    // * prepare request
+    final uri = Uri.parse('$baseURL$endpoint');
+    headers ??= {'Content-Type': 'application/json'};
 
-  Future<http.Response> getAllProducts() async {
-    return await http.get(Uri.parse('$baseURL/products'));
-  }
+    http.Response response =
+        http.Response('{"error":"request is failed"}', 503);
+    try {
+      switch (method) {
+        case 'GET':
+          response = await http.get(uri, headers: headers);
+        case 'POST':
+          response =
+              await http.post(uri, headers: headers, body: jsonEncode(body));
+        case 'PUT':
+          response =
+              await http.put(uri, headers: headers, body: jsonEncode(body));
+        case 'PATCH':
+          response =
+              await http.patch(uri, headers: headers, body: jsonEncode(body));
+        case 'DELETE':
+          response = await http.delete(uri, headers: headers);
+        default:
+          throw ('Unsupported HTTP method');
+      }
 
-  Future<http.Response> getAllProductsByCategory(String category) async {
-    String encodedCategory =
-        Uri.encodeComponent(category); // URL encode the category
-    printDebug(">>> '$baseURL/products/category?category=$encodedCategory'");
-    return await http
-        .get(Uri.parse('$baseURL/products/category?category=$encodedCategory'));
-  }
-
-  Future<http.Response> getAllSimilarProducts(
-      String seller_id, String category) async {
-    String encodedCategory =
-        Uri.encodeComponent(category); // URL encode the category
-    printDebug(">>> '$baseURL/products/category?category=$encodedCategory'");
-    return await http
-        .get(Uri.parse('$baseURL/products/category?category=$encodedCategory'));
-  }
-
-  Future<http.Response> searchProducts(String searchString) async {
-    String encodedSearchString = Uri.encodeComponent(searchString);
-    return await http
-        .get(Uri.parse('$baseURL/products/search/$encodedSearchString'));
-  }
-
-  Future<http.Response> getBookmarkedProducts(String buyerId) async {
-    return await http.get(Uri.parse('$baseURL/bookmarks/all/$buyerId'));
-  }
-
-  Future<http.Response> addProductBookmark(
-      String productId, String buyerId) async {
-    return await http.get(Uri.parse('$baseURL/bookmarks/$productId/$buyerId'));
-  }
-
-  Future<http.Response> deleteProductBookmark(String productId) async {
-    return await http.delete(Uri.parse('$baseURL/bookmarks/$productId'));
+      return response;
+    } catch (e) {
+      printDebug('>>>Error during API call: $e');
+      showSomeThingWrongSnackBar();
+      return response;
+    }
   }
 }

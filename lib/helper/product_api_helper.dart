@@ -3,6 +3,7 @@ import '../../Package/PackageConstants.dart';
 import '../../api/api_service.dart';
 import '../../models/Product.dart';
 import '../../provider/shared_preference.dart';
+import '../Utils/constants.dart';
 
 class ProductApiHelper {
   ApiService apiService = ApiService();
@@ -13,19 +14,26 @@ class ProductApiHelper {
     await Future.delayed(const Duration(milliseconds: 150));
     printDebug(">>>seller_id ${pref.id}");
 
-    final response = await apiService.getAllProducts();
-    final responseBody = jsonDecode(response.body);
+    final response =
+        await apiService.performRequest(method: 'GET', endpoint: '/products');
 
-    if (response.statusCode == 200) {
-      final dataList = responseBody["data"] as List<dynamic>? ?? [];
-      final List<Product> products =
-          dataList.map((data) => Product.fromJson(data)).toList();
+    try {
+      final responseBody = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final dataList = responseBody["data"] as List<dynamic>? ?? [];
+        final List<Product> products =
+            dataList.map((data) => Product.fromJson(data)).toList();
 
-      printDebug(">>>${products.length}");
-      return products;
-    } else {
-      final data = responseBody["error"] ?? '';
-      printDebug(">>>$data");
+        printDebug(">>>${products.length}");
+        return products;
+      } else {
+        final data = responseBody["error"] ?? '';
+        printDebug(">>>$data");
+        return [];
+      }
+    } catch (e) {
+      printDebug("Error during get all products: $e");
+      showSomeThingWrongSnackBar();
       return [];
     }
   }
@@ -34,20 +42,27 @@ class ProductApiHelper {
   Future<List<Product>> searchProducts(String searchString) async {
     await Future.delayed(const Duration(milliseconds: 150));
     printDebug(">>>seller_id ${pref.id}");
-
-    final response = await apiService.searchProducts(searchString);
+    String encodedSearchString = Uri.encodeComponent(searchString);
+    final response = await apiService.performRequest(
+        method: 'GET', endpoint: '/products/search/$encodedSearchString');
     final responseBody = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final dataList = responseBody["data"] as List<dynamic>? ?? [];
-      final List<Product> products =
-          dataList.map((data) => Product.fromJson(data)).toList();
+    try {
+      if (response.statusCode == 200) {
+        final dataList = responseBody["data"] as List<dynamic>? ?? [];
+        final List<Product> products =
+            dataList.map((data) => Product.fromJson(data)).toList();
 
-      printDebug(">>>${products.length}");
-      return products;
-    } else {
-      final data = responseBody["error"] ?? '';
-      printDebug(">>>$data");
+        printDebug(">>>${products.length}");
+        return products;
+      } else {
+        final data = responseBody["error"] ?? '';
+        printDebug(">>>$data");
+        return [];
+      }
+    } catch (e) {
+      printDebug("Error during search products: $e");
+      showSomeThingWrongSnackBar();
       return [];
     }
   }
@@ -56,20 +71,28 @@ class ProductApiHelper {
   Future<List<Product>> getAllProductsByCategory(String category) async {
     await Future.delayed(const Duration(milliseconds: 150));
     printDebug(">>>seller_id ${pref.id}");
-
-    final response = await apiService.getAllProductsByCategory(category);
+    String encodedCategory = Uri.encodeComponent(category);
+    final response = await apiService.performRequest(
+        method: 'GET',
+        endpoint: '/products/category?category=$encodedCategory');
     final responseBody = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final dataList = responseBody["data"] as List<dynamic>? ?? [];
-      final List<Product> products =
-          dataList.map((data) => Product.fromJson(data)).toList();
+    try {
+      if (response.statusCode == 200) {
+        final dataList = responseBody["data"] as List<dynamic>? ?? [];
+        final List<Product> products =
+            dataList.map((data) => Product.fromJson(data)).toList();
 
-      printDebug(">>>${products.length}");
-      return products;
-    } else {
-      final data = responseBody["error"] ?? '';
-      printDebug(">>>$data");
+        printDebug(">>>${products.length}");
+        return products;
+      } else {
+        final data = responseBody["error"] ?? '';
+        printDebug(">>>$data");
+        return [];
+      }
+    } catch (e) {
+      printDebug("Error during get all products by category: $e");
+      showSomeThingWrongSnackBar();
       return [];
     }
   }
@@ -79,21 +102,28 @@ class ProductApiHelper {
       String seller_id, String category) async {
     await Future.delayed(const Duration(milliseconds: 150));
     printDebug(">>>seller_id ${pref.id}");
-
-    final response =
-        await apiService.getAllSimilarProducts(seller_id, category);
+    String encodedCategory = Uri.encodeComponent(category);
+    final response = await apiService.performRequest(
+        method: 'GET',
+        endpoint: '/products/category?category=$encodedCategory');
     final responseBody = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final dataList = responseBody["data"] as List<dynamic>? ?? [];
-      final List<Product> products =
-          dataList.map((data) => Product.fromJson(data)).toList();
+    try {
+      if (response.statusCode == 200) {
+        final dataList = responseBody["data"] as List<dynamic>? ?? [];
+        final List<Product> products =
+            dataList.map((data) => Product.fromJson(data)).toList();
 
-      printDebug(">>>${products.length}");
-      return products;
-    } else {
-      final data = responseBody["error"] ?? '';
-      printDebug(">>>$data");
+        printDebug(">>>${products.length}");
+        return products;
+      } else {
+        final data = responseBody["error"] ?? '';
+        printDebug(">>>$data");
+        return [];
+      }
+    } catch (e) {
+      printDebug("Error during get all similar products: $e");
+      showSomeThingWrongSnackBar();
       return [];
     }
   }
@@ -101,19 +131,26 @@ class ProductApiHelper {
   Future<List<Product>> getBookmarkedProducts() async {
     await Future.delayed(const Duration(milliseconds: 150));
 
-    final response = await apiService.getBookmarkedProducts(pref.id);
+    final response = await apiService.performRequest(
+        method: 'GET', endpoint: '/bookmarks/all/${pref.id}');
     final responseBody = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final dataList = responseBody["data"] as List<dynamic>? ?? [];
-      final List<Product> products =
-          dataList.map((data) => Product.fromJson(data)).toList();
+    try {
+      if (response.statusCode == 200) {
+        final dataList = responseBody["data"] as List<dynamic>? ?? [];
+        final List<Product> products =
+            dataList.map((data) => Product.fromJson(data)).toList();
 
-      printDebug(">>>${products.length}");
-      return products;
-    } else {
-      final data = responseBody["error"] ?? '';
-      printDebug(">>>$data");
+        printDebug(">>>${products.length}");
+        return products;
+      } else {
+        final data = responseBody["error"] ?? '';
+        printDebug(">>>$data");
+        return [];
+      }
+    } catch (e) {
+      printDebug("Error during get bookmarked products: $e");
+      showSomeThingWrongSnackBar();
       return [];
     }
   }
@@ -121,11 +158,18 @@ class ProductApiHelper {
   Future<bool> addProductBookmark(String productId) async {
     await Future.delayed(const Duration(milliseconds: 150));
 
-    final response = await apiService.addProductBookmark(productId, pref.id);
+    final response = await apiService.performRequest(
+        method: 'GET', endpoint: '/bookmarks/$productId/${pref.id}');
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
+    try {
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      printDebug("Error during add product bookmark: $e");
+      showSomeThingWrongSnackBar();
       return false;
     }
   }
@@ -133,11 +177,18 @@ class ProductApiHelper {
   Future<bool> deleteProductBookmark(String productId) async {
     await Future.delayed(const Duration(milliseconds: 150));
 
-    final response = await apiService.deleteProductBookmark(productId);
+    final response = await apiService.performRequest(
+        method: 'DELETE', endpoint: '/bookmarks/$productId');
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
+    try {
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      printDebug("Error during delete product bookmark: $e");
+      showSomeThingWrongSnackBar();
       return false;
     }
   }

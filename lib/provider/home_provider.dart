@@ -2,12 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Package/PackageConstants.dart';
 import '../../helper/product_api_helper.dart';
 import '../../models/Product.dart';
+import '../connection/connectivity_helper.dart';
 
 class ProductState {
   final List<Product> products;
   final bool isLoading;
+  final String? retryMessage;
 
-  ProductState({required this.products, required this.isLoading});
+  ProductState(
+      {required this.products, required this.isLoading, this.retryMessage});
 }
 
 // Update ProductNotifier to use ProductState
@@ -33,12 +36,34 @@ class ProductNotifier extends AutoDisposeNotifier<ProductState> {
   }
 
   Future<void> fetchData() async {
-    state = ProductState(products: state.products, isLoading: true);
+    state = ProductState(
+      products: state.products,
+      isLoading: true,
+    );
+
+    // Check internet connectivity before making the API call
+    final hasInternet = await ConnectivityHelper.hasInternetConnection();
+    if (!hasInternet) {
+      printDebug(">>> No internet connection");
+      state = ProductState(
+        products: [],
+        isLoading: false,
+        retryMessage:
+            'No internet connection. \nPlease check your connection and retry.',
+      );
+      return;
+    }
     try {
       final products = await helper.getAllProducts();
-      state = ProductState(products: products, isLoading: false);
+      state = ProductState(
+          products: products,
+          isLoading: false,
+          retryMessage: 'There is no products.');
     } catch (e) {
-      state = ProductState(products: [], isLoading: false);
+      state = ProductState(
+          products: [],
+          isLoading: false,
+          retryMessage: 'Failed to load products. \nTap Retry to try again.');
       printDebug(e.toString());
       toast("Failed to load products");
     }

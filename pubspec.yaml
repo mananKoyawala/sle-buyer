@@ -47,6 +47,7 @@ dev_dependencies:
   image_picker: ^1.1.2
   firebase_storage: ^12.3.5
   font_awesome_flutter: ^10.8.0
+  connectivity_plus: ^6.1.0
 
 flutter:
   uses-material-design: true

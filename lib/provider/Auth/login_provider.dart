@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sle_buyer/Package/PackageConstants.dart';
 import 'package:sle_buyer/Screen/dashboard.dart';
+import 'package:sle_buyer/Service/NavigatorKey.dart';
+import 'package:sle_buyer/Utils/Widgets/no_internet.dart';
+import 'package:sle_buyer/connection/connectivity_helper.dart';
 import 'package:sle_buyer/helper/Firebase/firebase.dart';
 import 'package:sle_buyer/helper/buyer_api_helper.dart';
 import '../../Screen/Auth/login_otp_verification_screen.dart';
@@ -26,6 +29,12 @@ class LoginController with firebase {
 
   void onSubmit1(WidgetRef ref) async {
     if (formKey1.currentState!.validate() && !onClicked) {
+      // * check here no intenet to avoid unnessasary checks
+      if (!await ConnectivityHelper.hasInternetConnection()) {
+        showNoInternetDialog(context: navigatorContext);
+        return;
+      }
+
       onClicked = true;
       changeIsLoading(ref, true);
 

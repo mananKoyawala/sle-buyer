@@ -47,8 +47,8 @@ class SearchResultScreen extends ConsumerWidget with text_with_button, utils {
               data: (products) {
                 if (products.isEmpty) {
                   return const Center(
-                      child:
-                          Text("No Products", style: TextStyle(fontSize: 18)));
+                      child: Text("No products found!",
+                          style: TextStyle(fontSize: 18)));
                 }
                 return ListView.builder(
                   itemCount: products.length,

@@ -121,8 +121,30 @@ class HomeScreen extends ConsumerWidget
                             ? SizedBox(
                                 height: 250,
                                 child: Center(
-                                  child:
-                                      text(text: "No Products", fontSize: 18),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      sizeH(50),
+                                      text(
+                                          text: productList.retryMessage!,
+                                          textAlign: TextAlign.center,
+                                          fontSize: 18),
+                                      sizeH(60),
+                                      simpleButton(
+                                          width: getScreenWidth(context) / 2,
+                                          borderRadius: 30,
+                                          onTap: () async {
+                                            await ref
+                                                .read(productsProvider.notifier)
+                                                .fetchData();
+                                          },
+                                          title: text(
+                                              text: "Retry",
+                                              fontSize: 18,
+                                              textColor: Colors.white,
+                                              fontWeight: 5))
+                                    ],
+                                  ),
                                 ),
                               )
                             : ListView.builder(
