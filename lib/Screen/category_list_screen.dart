@@ -6,6 +6,7 @@ import 'package:sle_buyer/Package/Utils.dart';
 import 'package:sle_buyer/provider/category_list_provider.dart';
 
 import '../Package/PackageConstants.dart';
+import '../provider/dashboard_provider.dart';
 import 'show_category_screen.dart';
 
 class CategoryScreen extends ConsumerWidget with text_with_button, utils {
@@ -18,59 +19,66 @@ class CategoryScreen extends ConsumerWidget with text_with_button, utils {
     List<String> formattedCategoriesList = categoriesList
         .map((category) => category.replaceAll('&', '&\n'))
         .toList();
-    return Scaffold(
-        body: CP(
-      h: 16,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          sizeH(40),
-          text(text: "Categories", fontSize: 26, fontWeight: 5),
-          sizeH(10),
-          Expanded(
-            child: GridView.count(
-              padding: const EdgeInsets.all(0),
-              crossAxisCount: 3,
-              children: List.generate(formattedCategoriesList.length, (index) {
-                return Margin(
-                  margin: const EdgeInsets.all(5),
-                  child: InkWell(
-                    onTap: () async {
-                      // Call fetchData for the selected category
-                      final selectedCategory = categoriesList[index];
-                      Navigation.pushMaterial(
-                          ShowCategoryScreen(category: selectedCategory));
-                    },
-                    borderRadius: radius(10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.green, borderRadius: radius(10)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Icon(
-                            iconsList[index],
-                            color: Colors.white,
-                            size: 26,
-                          ),
-                          text(
-                              text: formattedCategoriesList[index],
-                              fontSize: 14,
-                              textColor: Colors.white,
-                              textAlign: TextAlign.center,
-                              fontWeight: 5,
-                              overflow: TextOverflow.ellipsis),
-                        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        onChangeDashboardProvider(ref, 0);
+      },
+      child: Scaffold(
+          body: CP(
+        h: 16,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sizeH(40),
+            text(text: "Categories", fontSize: 26, fontWeight: 5),
+            sizeH(10),
+            Expanded(
+              child: GridView.count(
+                padding: const EdgeInsets.all(0),
+                crossAxisCount: 3,
+                children:
+                    List.generate(formattedCategoriesList.length, (index) {
+                  return Margin(
+                    margin: const EdgeInsets.all(5),
+                    child: InkWell(
+                      onTap: () async {
+                        // Call fetchData for the selected category
+                        final selectedCategory = categoriesList[index];
+                        Navigation.pushMaterial(
+                            ShowCategoryScreen(category: selectedCategory));
+                      },
+                      borderRadius: radius(10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.green, borderRadius: radius(10)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              iconsList[index],
+                              color: Colors.white,
+                              size: 26,
+                            ),
+                            text(
+                                text: formattedCategoriesList[index],
+                                fontSize: 14,
+                                textColor: Colors.white,
+                                textAlign: TextAlign.center,
+                                fontWeight: 5,
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
-          ),
-          // sizeH25(),
-        ],
-      ),
-    ));
+            // sizeH25(),
+          ],
+        ),
+      )),
+    );
   }
 }
