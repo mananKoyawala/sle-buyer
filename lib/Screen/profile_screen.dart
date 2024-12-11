@@ -142,12 +142,12 @@ class ProfileScreen extends ConsumerWidget with text_with_button, utils {
                       subtitle: "Read our terms and conditions"),
                   AccounttList(
                       onTap: () {
-                        final Uri url = Uri.parse(
-                            "https://seamless-linkage-enterprise.carrd.co/");
+                        final Uri url =
+                            Uri.parse("https://github.com/mananKoyawala");
                         launchURL(url);
                       },
                       icon: Icons.info,
-                      title: "About us",
+                      title: "About me",
                       subtitle: "Get information about us & SLE"),
                   AccounttList(
                       onTap: () {

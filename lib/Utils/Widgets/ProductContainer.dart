@@ -37,18 +37,23 @@ class ProductContainer extends StatelessWidget with text_with_button, utils {
           child: Row(
             children: [
               Container(
+                margin: const EdgeInsets.all(5),
                 width: getScreenWidth(context) * .35,
                 decoration: BoxDecoration(
                     color: Colors.white, borderRadius: radius(20)),
                 child: ClipRRect(
                   borderRadius: radius(20),
-                  child: Image.network(
-                    product.image_url,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                          child: text(text: "No Image", fontSize: 18));
-                    },
+                  child: SizedBox(
+                    height: 160,
+                    width: getScreenWidth(context) * .35,
+                    child: Image.network(
+                      product.image_url,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                            child: text(text: "No Image", fontSize: 18));
+                      },
+                    ),
                   ),
                 ),
               ),
