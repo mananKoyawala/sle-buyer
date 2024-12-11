@@ -62,8 +62,6 @@ class HomeScreen extends ConsumerWidget
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       sizeH(50),
-                      text(text: "Your Products", fontSize: 22, fontWeight: 5),
-                      sizeH25(),
                       textFormField(
                           context: context,
                           funValidate: (val) => null,
