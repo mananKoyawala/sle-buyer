@@ -71,7 +71,7 @@ class ProductDetailsScreen extends ConsumerWidget with text_with_button, utils {
                 borderRadius: radius(30),
                 child: Image.network(
                   product.image_url,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Center(child: text(text: "No Image", fontSize: 18));
                   },
@@ -112,8 +112,7 @@ class ProductDetailsScreen extends ConsumerWidget with text_with_button, utils {
                   fontSize: 16,
                 ),
                 text(
-                    text:
-                        '${product.seller_first_name} ${product.seller_last_name}',
+                    text: product.seller_first_name,
                     fontSize: 18,
                     fontWeight: 5),
               ],

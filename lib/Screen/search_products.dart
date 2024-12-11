@@ -46,9 +46,10 @@ class SearchResultScreen extends ConsumerWidget with text_with_button, utils {
             child: searchResultAsyncValue.when(
               data: (products) {
                 if (products.isEmpty) {
-                  return const Center(
-                      child: Text("No products found!",
-                          style: TextStyle(fontSize: 18)));
+                  return Center(
+                      child: Text(
+                          "No products found! \n for search result '$searchString'",
+                          style: const TextStyle(fontSize: 18)));
                 }
                 return ListView.builder(
                   itemCount: products.length,
